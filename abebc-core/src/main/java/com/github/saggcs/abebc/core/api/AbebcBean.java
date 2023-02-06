@@ -23,7 +23,7 @@ import com.github.saggcs.abebc.core.impl.Uploader;
 public class AbebcBean {
 	public static class Builder extends AbstractBuilder<AbebcBean,Builder> {
 		private Path projectDir;
-		private String projectName, projectVersion;
+		private String buildNumber, projectVersion;
 		private Path outputDir;
 		private String wmVersion;
 		private URL abebsUrl;
@@ -36,75 +36,75 @@ public class AbebcBean {
 		Builder() {}
 		
 		public Path getOutputDir() { return outputDir; }
-		Builder outputDir(Path pOutputDir) {
+		public Builder outputDir(Path pOutputDir) {
 			final Path outputDir = Objects.requireNonNull(pOutputDir, "Output directory");
 			assertMutable();
 			this.outputDir = outputDir;
 			return this;
 		}
 		public Path getProjectDir() { return projectDir; }
-		Builder projectDir(Path pProjectDir) {
+		public Builder projectDir(Path pProjectDir) {
 			final Path projectDir = Objects.requireNonNull(pProjectDir, "Project directory");
 			assertMutable();
 			this.projectDir = projectDir;
 			return this;
 		}
-		public String getProjectName() { return projectName; }
-		Builder projectName(String pProjectName) {
-			final String projectName = Objects.requireNonNull(pProjectName, "Project name");
+		public String getBuildNumber() { return buildNumber; }
+		public Builder buildNumber(String pBuildNumber) {
+			final String buildNumber = Objects.requireNonNull(pBuildNumber, "Build number");
 			assertMutable();
-			this.projectName = projectName;
+			this.buildNumber = buildNumber;
 			return this;
 		}
 		public String getProjectVersion() { return projectVersion; }
-		Builder projectVersion(String pProjectVersion) {
+		public Builder projectVersion(String pProjectVersion) {
 			final String projectVersion = Objects.requireNonNull(pProjectVersion, "Project version");
 			assertMutable();
 			this.projectVersion = projectVersion;
 			return this;
 		}
 		public String getWmVersion() { return wmVersion; }
-		Builder wmVersion(String pWmVersion) {
+		public Builder wmVersion(String pWmVersion) {
 			final String wmVersion = Objects.requireNonNull(pWmVersion, "webMethods version");
 			assertMutable();
 			this.wmVersion = wmVersion;
 			return this;
 		}
 		public URL getAbebsUrl() { return abebsUrl; }
-		Builder abebsUrl(URL pUrl) {
+		public Builder abebsUrl(URL pUrl) {
 			final URL abebsUrl = Objects.requireNonNull(pUrl, "AbeBS URL");
 			assertMutable();
 			this.abebsUrl = abebsUrl;
 			return this;
 		}
 		public String getAbebsUserName() { return abebsUserName; }
-		Builder abebsUserName(String pUserName) {
+		public Builder abebsUserName(String pUserName) {
 			final String abebsUserName = Objects.requireNonNull(pUserName, "AbeBS user name");
 			assertMutable();
 			this.abebsUserName = abebsUserName;
 			return this;
 		}
 		public String getAbebsPassword() { return abebsPassword; }
-		Builder abebsPassword(String pPassword) {
+		public Builder abebsPassword(String pPassword) {
 			final String abebsPassword = Objects.requireNonNull(pPassword, "AbeBS password");
 			assertMutable();
 			this.abebsPassword = abebsPassword;
 			return this;
 		}
 		public boolean isSkippingTests() { return skippingTests; }
-		Builder skippingTests() {
+		public Builder skippingTests() {
 			return skippingTests(true);
 		}
-		Builder skippingTests(boolean pSkippingTests) {
+		public Builder skippingTests(boolean pSkippingTests) {
 			assertMutable();
 			skippingTests = pSkippingTests;
 			return this;
 		}
 		public boolean isSkippingIsccr() { return skippingIsccr; }
-		Builder skippingIsccr() {
+		public Builder skippingIsccr() {
 			return skippingIsccr(true);
 		}
-		Builder skippingIsccr(boolean pSkippingIsccr) {
+		public Builder skippingIsccr(boolean pSkippingIsccr) {
 			assertMutable();
 			skippingIsccr = pSkippingIsccr;
 			return this;

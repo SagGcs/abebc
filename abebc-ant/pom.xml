@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.github.saggcs.abebc</groupId>
+    <artifactId>abebc-parent</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>abebc-ant</artifactId>
+  <name>ABE Build Client (Ant Task)</name>
+  <dependencies>
+  	<dependency>
+  	  <groupId>org.apache.ant</groupId>
+  	  <artifactId>ant</artifactId>
+  	  <version>1.10.13</version>
+  	</dependency>
+  	<dependency>
+	  <groupId>com.github.saggcs.abebc</groupId>
+      <artifactId>abebc-core</artifactId>
+      <version>0.1-SNAPSHOT</version>
+	</dependency>
+  </dependencies>
+</project>

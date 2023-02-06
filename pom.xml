@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.saggcs.abebc</groupId>
   <artifactId>abebc-parent</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ABE Build Client (Parent project)</name>
   <description>Client Library for the ABE Build Server (Parent project)</description>
@@ -69,5 +69,6 @@
   </build>
   <modules>
   	<module>abebc-core</module>
+  	<module>abebc-ant</module>
   </modules>
 </project>

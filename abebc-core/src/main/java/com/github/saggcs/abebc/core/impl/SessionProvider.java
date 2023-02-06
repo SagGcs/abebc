@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -54,10 +53,12 @@ public class SessionProvider {
 					} catch (DateTimeException e) {
 						throw Exceptions.show(e);
 					}
+					log.exiting("getSession", sessionId, wmVersion, userName, validUntilStr);
 					return new Session(sessionId, wmVersion, userName, validUntil);
 				}
 			}
 		} catch (IOException e) {
+			log.error("getSession", e.getClass().getName() + ": " + e.getMessage());
 			throw Exceptions.show(e);
 		}
 	}

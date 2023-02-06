@@ -31,6 +31,7 @@ public class AbebcBean {
 		private String abebsPassword;
 		private boolean skippingTests;
 		private boolean skippingIsccr;
+		private String destFileName;
 
 		Builder() {}
 		
@@ -108,8 +109,16 @@ public class AbebcBean {
 			skippingIsccr = pSkippingIsccr;
 			return this;
 		}
+		public String getDestFileName() { return destFileName; }
+		public Builder destFileName(String pDestFileName) {
+			final String destFileName = Objects.requireNonNull(pDestFileName, "Destination file name");
+			assertMutable();
+			this.destFileName = destFileName;
+			return this;
+		}
 		@Override public AbebcBean newInstance() {
 			return new AbebcBean(getProjectDir(), getOutputDir(), getWmVersion(),
+					             getDestFileName(),
 					             getAbebsUrl(), getAbebsUserName(),
 					             getAbebsPassword(), isSkippingTests(),
 					             isSkippingIsccr());
@@ -132,9 +141,10 @@ public class AbebcBean {
 	private final String abebsPassword;
 	private final boolean skippingTests;
 	private final boolean skippingIsccr;
+	private final String destFileName;
 
 	AbebcBean(Path pProjectDir, Path pOutputDir, String pWmVersion,
-			  URL pAbebsUrl, String pAbebsUserName,
+			  String pDestFileName, URL pAbebsUrl, String pAbebsUserName,
 			  String pAbebsPassword, boolean pSkippingTests, boolean pSkippingIsccr) {
 		projectDir = pProjectDir;
 		outputDir = pOutputDir;
@@ -144,6 +154,7 @@ public class AbebcBean {
 		abebsPassword = pAbebsPassword;
 		skippingTests = pSkippingTests;
 		skippingIsccr = pSkippingIsccr;
+		destFileName = pDestFileName;
 	}
 
 	public Path getProjectDir() { return projectDir; }
@@ -154,8 +165,9 @@ public class AbebcBean {
 	public String getAbebsPassword() { return abebsPassword; }
 	public boolean isSkippingTests() { return skippingTests; }
 	public boolean isSkippingIsccr() { return skippingIsccr; }
+	public String getDestFileName() { return destFileName; }
 
-	public boolean run() {
+	public void run() {
 		final Session session = sessionProvider.getSession(this);
 		final Build build = buildProvider.getBuild(this, session);
 		uploader.run(this, build);

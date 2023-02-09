@@ -267,6 +267,6 @@ public class JsonUtils {
 	public static String asString(Map<String, Object> pJsonObject) {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		write(pJsonObject, baos);
-		return baos.toString(StandardCharsets.UTF_8);
+		return new String(baos.toByteArray(), StandardCharsets.UTF_8);
 	}
 }

@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import com.github.jochenw.afw.core.log.ILog;
 import com.github.jochenw.afw.core.util.HttpConnector;
 import com.github.jochenw.afw.core.util.HttpConnector.HttpConnection;
+import com.github.jochenw.afw.core.util.Rest;
 import com.github.jochenw.afw.core.util.Streams;
 import com.github.jochenw.afw.di.api.LogInject;
 import com.github.jochenw.afw.di.util.Exceptions;
@@ -35,35 +36,27 @@ import com.github.saggcs.abebc.core.api.AbebcBean;
 
 public class Uploader {
 	private @LogInject ILog log;
-	private @Inject HttpConnector httpConnector;
+	private @Inject Rest rest;
 
 	public void run(AbebcBean pAbebcBean, Build pBuild) {
 		log.entering("run", pBuild.getSession().getSessionId(), pBuild.getBuildId(),
 				     pAbebcBean.getAbebsUrl());
-		try {
-			final URL url = new URL(pAbebcBean.getAbebsUrl(), "/rest/upload/"
-		            + pBuild.getSession().getSessionId() + "?buildId="
-		            + URLEncoder.encode(pBuild.getBuildId(), StandardCharsets.UTF_8));
-			try (HttpConnection conn = httpConnector.connect(url)) {
-				final HttpURLConnection urlConn = conn.getUrlConnection();
-				urlConn.setRequestMethod("POST");
-				urlConn.setDoOutput(true);
-				urlConn.setDoInput(true);
-				try (final OutputStream out = urlConn.getOutputStream()) {
-					sendFiles(pAbebcBean.getProjectDir(), out);
+		final Path outputPath = pAbebcBean.getOutputDir().resolve(pAbebcBean.getDestFileName());
+		rest.builder(pAbebcBean.getAbebsUrl())
+		    .resource("/rest/upload")
+		    .resourceId(pBuild.getSession().getSessionId())
+		    .parameter("buildId", pBuild.getBuildId())
+		    .body((out) -> {
+				sendFiles(pAbebcBean.getProjectDir(), out);
+		    })
+		    .consumer((in) -> {
+				Files.createDirectories(outputPath.getParent());
+				try (OutputStream out = Files.newOutputStream(outputPath)) {
+					Streams.copy(in, out);
 				}
-				try (final InputStream in = urlConn.getInputStream()) {
-					final Path outputPath = pAbebcBean.getOutputDir().resolve(pAbebcBean.getDestFileName());
-					Files.createDirectories(outputPath.getParent());
-					try (OutputStream out = Files.newOutputStream(outputPath)) {
-						Streams.copy(in, out);
-					}
-				}
-			}
-		} catch (IOException e) {
-			log.error("getBuild", e.getClass().getName() + ": " + e.getMessage());
-			throw Exceptions.show(e);
-		}
+		    })
+		    .send();
+		log.exiting("run", outputPath);
 	}
 
 	protected void sendFiles(Path pProjectDir, OutputStream pOut) {

@@ -8,8 +8,8 @@
   <description>Client Library for the ABE Build Server (Parent project)</description>
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+	<maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <scm>
 	<url>https://github.com/SagGcs/abebs-client</url>
@@ -70,5 +70,6 @@
   <modules>
   	<module>abebc-core</module>
   	<module>abebc-ant</module>
+  	<module>abebc-maven-plugin</module>
   </modules>
 </project>

@@ -11,14 +11,14 @@ import javax.inject.Inject;
 import com.github.jochenw.afw.core.data.Data;
 import com.github.jochenw.afw.core.function.Functions.FailableFunction;
 import com.github.jochenw.afw.core.log.ILog;
-import com.github.jochenw.afw.core.util.Rest;
+import com.github.jochenw.afw.core.util.RestAccess;
 import com.github.jochenw.afw.di.api.LogInject;
 import com.github.jochenw.afw.di.util.Exceptions;
 import com.github.saggcs.abebc.core.api.AbebcBean;
 import com.github.saggcs.abebc.uttill.JsonUtils;
 
 public class SessionProvider {
-	private @Inject Rest rest;
+	private @Inject RestAccess rest;
 	private @LogInject ILog log;
 
 	public Session getSession(AbebcBean pBean) {

@@ -21,6 +21,7 @@ public class AbebcAntTask extends Task {
 	private String logLevel;
 	private File logFile;
 	private File outputFile, projectDir;
+	private File destFile;
 	private boolean skippingTests, skippingIsccr;
 	private String wmVersion, projectVersion, buildNumber;
 
@@ -72,7 +73,12 @@ public class AbebcAntTask extends Task {
 			throw new BuildException("Invalid value for attribute outputFile:"
 					+ " Output directory " + outDir + " does not exist, or is no directory.");
 		}
-		final String destFileName = outDirFile.toPath().getFileName().toString();
+		final Path destFile;
+		if (this.destFile == null) {
+			destFile = null;
+		} else {
+			destFile = this.destFile.toPath();
+		}
 		final File projectDirFile = getProjectDir();
 		final Path projectDir;
 		if (projectDirFile == null) {
@@ -126,7 +132,7 @@ public class AbebcAntTask extends Task {
 				.abebsUserName(userName)
 				.outputDir(outDir)
 				.projectDir(projectDir)
-				.destFileName(destFileName)
+				.destFile(destFile)
 				.skippingIsccr(isSkippingIsccr())
 				.skippingTests(isSkippingTests())
 				.wmVersion(wmVer)
@@ -134,8 +140,7 @@ public class AbebcAntTask extends Task {
 				.buildNumber(buildNmbr)
 				.build();
 		cf.init(ab);
-		ab.run();
-
+		ab.run((s) -> getProject().log(s));
 	}
 
 }

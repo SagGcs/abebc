@@ -1,5 +1,7 @@
 package com.github.saggcs.abebc.core.api;
 
+import com.github.jochenw.afw.core.util.HttpConnector;
+import com.github.jochenw.afw.core.util.RestAccess;
 import com.github.jochenw.afw.di.api.Module;
 import com.github.jochenw.afw.di.api.Scopes;
 import com.github.saggcs.abebc.core.impl.BuildProvider;
@@ -11,5 +13,7 @@ public class AbebcCore {
 		b.bind(SessionProvider.class).in(Scopes.SINGLETON);
 		b.bind(BuildProvider.class).in(Scopes.SINGLETON);
 		b.bind(Uploader.class).in(Scopes.SINGLETON);
+		b.bind(RestAccess.class).in(Scopes.SINGLETON);
+		b.bind(HttpConnector.class).in(Scopes.SINGLETON);
 	};
 }

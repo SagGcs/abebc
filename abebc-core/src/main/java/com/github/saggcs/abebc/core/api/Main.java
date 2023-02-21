@@ -1,16 +1,20 @@
 package com.github.saggcs.abebc.core.api;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Function;
 
 import com.github.jochenw.afw.core.cli.Cli;
+import com.github.jochenw.afw.core.inject.AfwCoreOnTheFlyBinder;
 import com.github.jochenw.afw.core.log.ILogFactory;
 import com.github.jochenw.afw.core.log.simple.SimpleLogFactory;
 import com.github.jochenw.afw.core.util.Objects;
 import com.github.jochenw.afw.di.api.IComponentFactory;
+import com.github.jochenw.afw.di.util.Exceptions;
 import com.github.jochenw.afw.core.log.ILog.Level;
 
 public class Main {
@@ -22,8 +26,9 @@ public class Main {
 		private Level logLevel;
 		private Path outputDir;
 		private Path projectDir;
+		private String projectVersion, buildNumber;
 		private String wmVersion;
-		private String destFileName;
+		private Path destFile;
 		private boolean skipTests, skipIsccr;
 	}
 
@@ -41,14 +46,21 @@ public class Main {
 				.stringOption("abebsUsername", "aus").required().handler((c,s) -> { c.getBean().abebsUsername = s; }).end()
 				.pathOption("logFile", "lf").handler((c,p) -> { c.getBean().logFile = p; }).end()
 				.enumOption(Level.class, "logLevel", "ll").handler((c,l) -> { c.getBean().logLevel = l; }).end()
-				.pathOption("outputDir", "od").dirRequired().handler((c,p) -> { c.getBean().outputDir = p; }).end()
-				.pathOption("projectDir", "pd").dirRequired().handler((c,p) -> { c.getBean().projectDir = p; }).end()
-				.stringOption("destFileName", "df").required().handler((c,s) -> { c.getBean().destFileName = s; }).end()
+				.pathOption("outputDir", "od").handler((c,p) -> { c.getBean().outputDir = p; }).end()
+				.pathOption("projectDir", "pd").dirRequired().defaultValue(".").handler((c,p) -> { c.getBean().projectDir = p; }).end()
+				.stringOption("projectVersion", "pv").required().handler((c,s) -> { c.getBean().projectVersion = s; }).end()
+				.stringOption("buildNumber", "bn").required().handler((c,s) -> { c.getBean().buildNumber = s; }).end()
+				.pathOption("destFileName", "df").handler((c,p) -> { c.getBean().destFile = p; }).end()
 				.booleanOption("skipIsccr", "si").handler((c,b) -> { c.getBean().skipIsccr=b; }).end()
 				.booleanOption("skipTests", "st").handler((c,b) -> { c.getBean().skipTests=b; }).end()
 				.stringOption("wmVersion", "wv").required().handler((c,s) -> { c.getBean().wmVersion = s; }).end()
 				.errorHandler(pErrorHandler)
 				.beanValidator((b) -> {
+					if (b.outputDir == null  &&  b.destFile == null) {
+						return "Either of the options --destFileName, or --outputDir, is required.";
+					} else if (b.outputDir != null  &&  b.destFile != null) {
+						return "The options --destFileName, and --outputDir, are mutually exclusive.";
+					}
 					return null;
 				})
 				.parse(pArgs);
@@ -63,22 +75,29 @@ public class Main {
 			lf = SimpleLogFactory.of(pOptions.logFile, logLevel);
 		}
 		final IComponentFactory cf =
-				IComponentFactory.builder().module(AbebcCore.MODULE.extend((b) -> {
+				IComponentFactory.builder().onTheFlyBinder(new AfwCoreOnTheFlyBinder()).module(AbebcCore.MODULE.extend((b) -> {
 					b.bind(ILogFactory.class).toInstance(lf);
 				})).build();
+		try {
+			Files.createDirectories(pOptions.outputDir);
+		} catch (IOException e) {
+			throw Exceptions.show(e);
+		}
 		final AbebcBean ab = AbebcBean.builder()
 				.abebsPassword(pOptions.abebsPassword)
 				.abebsUrl(pOptions.abebsUrl)
 				.abebsUserName(pOptions.abebsUsername)
 				.outputDir(pOptions.outputDir)
 				.projectDir(pOptions.projectDir)
-				.destFileName(pOptions.destFileName)
+				.projectVersion(pOptions.projectVersion)
+				.buildNumber(pOptions.buildNumber)
+				.destFile(pOptions.destFile)
 				.skippingIsccr(pOptions.skipIsccr)
 				.skippingTests(pOptions.skipTests)
 				.wmVersion(pOptions.wmVersion)
 				.build();
 		cf.init(ab);
-		ab.run();
+		ab.run(System.out::println);
 	}
 
 	public static void main(String[] pArgs) {

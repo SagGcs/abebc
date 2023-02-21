@@ -6,8 +6,10 @@ import java.nio.file.Path;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 import com.github.jochenw.afw.core.log.ILogFactory;
 import com.github.jochenw.afw.core.log.ILog.Level;
@@ -33,8 +35,8 @@ public class BuildGoal extends AbstractMojo {
 	private Path outputDir;
 	@Parameter(property="abebc:projectDir", required=false, defaultValue="${project.basedir}")
 	private Path projectDir;
-	@Parameter(property="abebc:destFileName", required=false, defaultValue="${project.artifactId}-${project.version}-is.zip")
-	private String destFileName;
+	@Parameter(property="abebc:destFile", required=false, defaultValue="${project.artifactId}-${project.version}-is.zip")
+	private Path destFile;
 	@Parameter(property="abebc:skippingTests", required=false, defaultValue="false")
 	private boolean skippingTests;
 	@Parameter(property="abebc:skippingIsccr", required=false, defaultValue="false")
@@ -45,6 +47,8 @@ public class BuildGoal extends AbstractMojo {
 	private String projectVersion;
 	@Parameter(property="abebc:buildNumber", required=true)
 	private String buildNumber;
+	@Component
+	private MavenProject project;
 
 
 	@Override
@@ -64,7 +68,7 @@ public class BuildGoal extends AbstractMojo {
 				.abebsUserName(this.abebsUserName)
 				.outputDir(this.outputDir)
 				.projectDir(projectDir)
-				.destFileName(destFileName)
+				.destFile(destFile)
 				.skippingIsccr(skippingIsccr)
 				.skippingTests(skippingTests)
 				.wmVersion(wmVersion)
@@ -72,6 +76,6 @@ public class BuildGoal extends AbstractMojo {
 				.buildNumber(buildNumber)
 				.build();
 		cf.init(ab);
-		ab.run();
+		ab.run((s) -> getLog().info(s));
 	}
 }

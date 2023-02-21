@@ -5,10 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -19,15 +15,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.inject.Inject;
 
 import com.github.jochenw.afw.core.log.ILog;
+import com.github.jochenw.afw.core.util.FileUtils;
+import com.github.jochenw.afw.core.util.Holder;
 import com.github.jochenw.afw.core.util.HttpConnector;
 import com.github.jochenw.afw.core.util.HttpConnector.HttpConnection;
-import com.github.jochenw.afw.core.util.Rest;
+import com.github.jochenw.afw.core.util.RestAccess;
 import com.github.jochenw.afw.core.util.Streams;
 import com.github.jochenw.afw.di.api.LogInject;
 import com.github.jochenw.afw.di.util.Exceptions;
@@ -36,27 +36,61 @@ import com.github.saggcs.abebc.core.api.AbebcBean;
 
 public class Uploader {
 	private @LogInject ILog log;
-	private @Inject Rest rest;
+	private @Inject RestAccess rest;
 
-	public void run(AbebcBean pAbebcBean, Build pBuild) {
+	public void run(AbebcBean pAbebcBean, Build pBuild, Consumer<String> pLogger) {
 		log.entering("run", pBuild.getSession().getSessionId(), pBuild.getBuildId(),
 				     pAbebcBean.getAbebsUrl());
-		final Path outputPath = pAbebcBean.getOutputDir().resolve(pAbebcBean.getDestFileName());
+		final Path outputDir = pAbebcBean.getOutputDir();
+		final Path outputFile = pAbebcBean.getDestFile();
+		final Holder<Path> outputPath = new Holder<>();
 		rest.builder(pAbebcBean.getAbebsUrl())
 		    .resource("/rest/upload")
 		    .resourceId(pBuild.getSession().getSessionId())
 		    .parameter("buildId", pBuild.getBuildId())
+		    .header("content-type", "application/zip")
 		    .body((out) -> {
 				sendFiles(pAbebcBean.getProjectDir(), out);
 		    })
 		    .consumer((in) -> {
-				Files.createDirectories(outputPath.getParent());
-				try (OutputStream out = Files.newOutputStream(outputPath)) {
-					Streams.copy(in, out);
-				}
+		    	if (outputFile != null) {
+		    		pLogger.accept("Creating output file: " + outputFile);
+		    		outputPath.set(outputFile);
+		    		if (outputFile.getParent() != null) {
+		    			Files.createDirectories(outputFile.getParent());
+		    		}
+		    		try (OutputStream out = Files.newOutputStream(outputFile)) {
+		    			Streams.copy(in, out);
+		    		}
+		    	} else {
+		    		pLogger.accept("Extracting output to directory: " + outputDir);
+		    		outputPath.set(outputDir);
+		    		try (ZipInputStream zin = new ZipInputStream(in)) {
+		    			for (;;) {
+		    				final ZipEntry ze = zin.getNextEntry();
+		    				if (ze == null) {
+		    					break;
+		    				}
+		    				if (!ze.isDirectory()) {
+		    					final Path zePath = outputDir.resolve(ze.getName());
+		    					if (FileUtils.isWithin(outputDir, zePath)) {
+		    						final Path zeDir = zePath.getParent();
+		    						if (zeDir != null) {
+		    							Files.createDirectories(zeDir);
+		    						}
+		    						try (OutputStream out = Files.newOutputStream(zePath)) {
+		    							Streams.copy(zin, out);
+		    						}
+		    					} else {
+		    						throw new IllegalStateException("Invalid zip entry, file would be outside of output directory: " + ze.getName());
+		    					}
+		    				}
+		    			}
+		    		}
+  		    	}
 		    })
 		    .send();
-		log.exiting("run", outputPath);
+		log.exiting("run", outputPath.get());
 	}
 
 	protected void sendFiles(Path pProjectDir, OutputStream pOut) {
@@ -101,7 +135,7 @@ public class Uploader {
 		final FileVisitor<Path> fv = new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path pFile, BasicFileAttributes pAttrs) throws IOException {
-				final String path = pPackageDir.resolve(pFile).toString().replace('\\', '/');
+				final String path = pPackageDir.relativize(pFile).toString().replace('\\', '/');
 				sendFile(pOut, pFile, pAttrs, "IS/packages/" + pPackageName + "/" + path);
 				return FileVisitResult.CONTINUE;
 			}

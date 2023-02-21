@@ -3,11 +3,11 @@ package com.github.saggcs.abebc.core.api;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 import com.github.jochenw.afw.core.util.AbstractBuilder;
-import com.github.jochenw.afw.di.api.IComponentFactory;
 import com.github.saggcs.abebc.core.impl.Build;
 import com.github.saggcs.abebc.core.impl.BuildProvider;
 import com.github.saggcs.abebc.core.impl.Session;
@@ -31,7 +31,7 @@ public class AbebcBean {
 		private String abebsPassword;
 		private boolean skippingTests;
 		private boolean skippingIsccr;
-		private String destFileName;
+		private Path destFile;
 
 		Builder() {}
 		
@@ -109,18 +109,19 @@ public class AbebcBean {
 			skippingIsccr = pSkippingIsccr;
 			return this;
 		}
-		public String getDestFileName() { return destFileName; }
-		public Builder destFileName(String pDestFileName) {
-			final String destFileName = Objects.requireNonNull(pDestFileName, "Destination file name");
+		public Path getDestFile() { return destFile; }
+		public Builder destFile(Path pDestFile) {
+			final Path destFile = Objects.requireNonNull(pDestFile, "Destination file");
 			assertMutable();
-			this.destFileName = destFileName;
+			this.destFile = destFile;
 			return this;
 		}
 		@Override public AbebcBean newInstance() {
 			return new AbebcBean(getProjectDir(), getOutputDir(), getWmVersion(),
-					             getDestFileName(),
+					             getDestFile(),
 					             getAbebsUrl(), getAbebsUserName(),
-					             getAbebsPassword(), isSkippingTests(),
+					             getAbebsPassword(), getProjectVersion(),
+					             getBuildNumber(), isSkippingTests(),
 					             isSkippingIsccr());
 		}
 	}
@@ -141,20 +142,24 @@ public class AbebcBean {
 	private final String abebsPassword;
 	private final boolean skippingTests;
 	private final boolean skippingIsccr;
-	private final String destFileName;
+	private final Path destFile;
+	private final String projectVersion, buildNumber;
 
 	AbebcBean(Path pProjectDir, Path pOutputDir, String pWmVersion,
-			  String pDestFileName, URL pAbebsUrl, String pAbebsUserName,
-			  String pAbebsPassword, boolean pSkippingTests, boolean pSkippingIsccr) {
+			  Path pDestFile, URL pAbebsUrl, String pAbebsUserName,
+			  String pAbebsPassword, String pProjectVersion, String pBuildNumber,
+			  boolean pSkippingTests, boolean pSkippingIsccr) {
 		projectDir = pProjectDir;
 		outputDir = pOutputDir;
 		wmVersion = pWmVersion;
 		abebsUrl = pAbebsUrl;
 		abebsUserName = pAbebsUserName;
 		abebsPassword = pAbebsPassword;
+		projectVersion = pProjectVersion;
+		buildNumber = pBuildNumber;
 		skippingTests = pSkippingTests;
 		skippingIsccr = pSkippingIsccr;
-		destFileName = pDestFileName;
+		destFile = pDestFile;
 	}
 
 	public Path getProjectDir() { return projectDir; }
@@ -163,13 +168,15 @@ public class AbebcBean {
 	public URL getAbebsUrl() { return abebsUrl; }
 	public String getAbebsUserName() { return abebsUserName; }
 	public String getAbebsPassword() { return abebsPassword; }
+	public String getProjectVersion() { return projectVersion; }
+	public String getBuildNumber() { return buildNumber; }
 	public boolean isSkippingTests() { return skippingTests; }
 	public boolean isSkippingIsccr() { return skippingIsccr; }
-	public String getDestFileName() { return destFileName; }
+	public Path getDestFile() { return destFile; }
 
-	public void run() {
+	public void run(Consumer<String> pLogger) {
 		final Session session = sessionProvider.getSession(this);
 		final Build build = buildProvider.getBuild(this, session);
-		uploader.run(this, build);
+		uploader.run(this, build, pLogger);
 	}
 }

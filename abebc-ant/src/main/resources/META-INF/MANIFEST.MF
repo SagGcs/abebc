@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Specification-Title: "ABE Build Client, Ant Task"
+Specification-Version: 0.1
+Specification-Vendor: "The open source project at https://github.com/saggcs/abebc"
+Implementation-Title: io.github.saggcs.abebc.ant
+Implementation-Version: 0.1
+Implementation-Vendor: "The open source project at https://github.com/saggcs/abebc"

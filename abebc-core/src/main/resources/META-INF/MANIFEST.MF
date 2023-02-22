@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Specification-Title: "ABE Build Client, Core Library"
+Specification-Version: 0.1
+Specification-Vendor: "The open source project at https://github.com/saggcs/abebc"
+Implementation-Title: io.github.saggcs.abebc.core
+Implementation-Version: 0.1
+Implementation-Vendor: "The open source project at https://github.com/saggcs/abebc"

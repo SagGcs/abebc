@@ -1,3 +1,18 @@
+<!-- 
+ ! Copyright 2023 The open source project at https://github.com/saggcs/abebc
+ ! 
+ ! Licensed under the Apache License, Version 2.0 (the "License");
+ ! you may not use this file except in compliance with the License.
+ ! You may obtain a copy of the License at
+ ! 
+ !   https://www.apache.org/licenses/LICENSE-2.0
+ ! 
+ ! Unless required by applicable law or agreed to in writing, software
+ ! distributed under the License is distributed on an "AS IS" BASIS,
+ ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ! See the License for the specific language governing permissions and
+ ! limitations under the License.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.saggcs.abebc</groupId>
@@ -60,6 +75,12 @@
 			  <goals><goal>jar-no-fork</goal></goals>
 			  <configuration>
 			    <attach>true</attach>
+			    <excludes>
+					<!-- No comments in MANIFEST files, see
+					     https://bugs.java.com/bugdatabase/view_bug.do?bug_id=4782054
+					-->
+					<exclude>**/MANIFEST.MF</exclude>
+				</excludes>
 			  </configuration>
 			</execution>
 		  </executions>
@@ -67,29 +88,18 @@
 	  </plugins>
 	  <defaultGoal>clean install</defaultGoal>
   </build>
+  <reporting>
+	  <plugins>
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-changes-plugin</artifactId>
+		  <version>2.12.1</version>
+		</plugin>
+	  </plugins>
+  </reporting>
   <modules>
   	<module>abebc-core</module>
   	<module>abebc-ant</module>
   	<module>abebc-maven-plugin</module>
   </modules>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.apache.maven</groupId>
-  		<artifactId>maven-core</artifactId>
-  		<version>3.9.0</version>
-  		<scope>provided</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.maven</groupId>
-  		<artifactId>maven-plugin-api</artifactId>
-  		<version>3.9.0</version>
-  		<scope>provided</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.maven.plugin-tools</groupId>
-  		<artifactId>maven-plugin-annotations</artifactId>
-  		<version>3.7.1</version>
-  		<scope>provided</scope>
-  	</dependency>
-  </dependencies>
 </project>

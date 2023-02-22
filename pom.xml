@@ -26,10 +26,12 @@
 	<maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+  <url>https://github.com/saggcs/abebc</url>
   <scm>
-	<url>https://github.com/SagGcs/abebs-client</url>
-	<connection>https://github.com/SagGcs/abebs-client.git</connection>
-	<developerConnection>https://github.com/SagGcs/abebs-client.git</developerConnection>
+	  <connection>scm:git:https://github.com/saggcs/abebc.git</connection>
+	  <developerConnection>scm:git:https://github.com/saggcs/abebc.git</developerConnection>
+	  <url>https://github.com/saggcs/abebc</url>
+    <tag>HEAD</tag>
   </scm>
   <licenses>
     <license>

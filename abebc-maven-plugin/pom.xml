@@ -18,7 +18,7 @@
   <parent>
     <groupId>io.github.saggcs.abebc</groupId>
     <artifactId>abebc-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
   </parent>
   <artifactId>abebc-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
@@ -27,7 +27,7 @@
 	<dependency>
       <groupId>io.github.saggcs.abebc</groupId>
 	  <artifactId>abebc-core</artifactId>
-	  <version>0.1-SNAPSHOT</version>
+	  <version>0.1</version>
 	</dependency>
   	<dependency>
   	  <groupId>org.apache.maven</groupId>

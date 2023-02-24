@@ -18,7 +18,7 @@
   <parent>
     <groupId>io.github.saggcs.abebc</groupId>
     <artifactId>abebc-parent</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
   <name>ABE Build Client (Core project)</name>
   <description>Client Library for the ABE Build Server (Core project, and CLI)</description>

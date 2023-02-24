@@ -147,7 +147,7 @@
               <version>1.6.13</version>
               <extensions>true</extensions>
               <configuration>
-                  <serverId>ossrh</serverId>
+                  <serverId>ossrh-saggcs</serverId>
                   <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
                   <autoReleaseAfterClose>true</autoReleaseAfterClose>
               </configuration>

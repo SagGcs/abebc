@@ -1,4 +1,4 @@
-# The ABEBS client
+# The ABE build client
 
 This project implements a client library for the ABE Build Server (ABEBS). The client library is an open source project, unlike the actual server.
 
